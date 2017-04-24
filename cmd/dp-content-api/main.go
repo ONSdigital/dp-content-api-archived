@@ -29,6 +29,8 @@ func main() {
 	dbSource := utils.GetEnvironmentVariable("DB_ACCESS", "user=dp dbname=dp sslmode=disable")
 	port := utils.GetEnvironmentVariable("PORT", "8082")
 	generatorURL = utils.GetEnvironmentVariable("GENERATOR_URL", "localhost:8092")
+	taxonomyFile := utils.GetEnvironmentVariable("TAXONOMY_FILE", "static/taxonomy.json")
+	parentFile := utils.GetEnvironmentVariable("PARENT_FILE", "static/parent.json")
 	log.Namespace = "dp-content-api"
 
 	db, dbErr := sql.Open("postgres", dbSource)
@@ -44,14 +46,14 @@ func main() {
 	defer findMetaDataStatement.Close()
 	defer findS3DataStatement.Close()
 
-	data, parentErr := ioutil.ReadFile("static/parent.json")
+	data, parentErr := ioutil.ReadFile(parentFile)
 	if parentErr != nil {
 		log.ErrorC("Failed to load static parent data", parentErr, log.Data{})
 		panic(parentErr)
 	}
 	parentJSON = data
 
-	data, taxonomyErr := ioutil.ReadFile("static/taxonomy.json")
+	data, taxonomyErr := ioutil.ReadFile(taxonomyFile)
 	if taxonomyErr != nil {
 		log.ErrorC("Failed to load static parent data", taxonomyErr, log.Data{})
 		panic(taxonomyErr)

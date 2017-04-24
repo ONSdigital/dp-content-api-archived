@@ -11,6 +11,8 @@ resource.
 * `DB_ACCESS` defaults to "user=dp dbname=dp sslmode=disable"
 * `GENERATOR_URL` defaults to "http://localhost:8092"
 * `PORT` defaults to "8082"
+* `TAXONOMY_FILE` defaults to "static/taxonomy.json"
+* `PARENT_FILE` defaults to "static/parent.json"
 
 ### Interfaces
 

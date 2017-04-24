@@ -1,0 +1,4 @@
+build/
+dp-content-api-*.tar.gz
+dp-content-api.nomad
+dp-content-api.nomad.bak

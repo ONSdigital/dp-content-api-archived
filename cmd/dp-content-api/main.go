@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ONSdigital/dp-content-api/content"
-	"github.com/ONSdigital/dp-publish-pipeline/utils"
+	"github.com/ONSdigital/dp-content-api/utils"
 	"github.com/ONSdigital/go-ns/log"
 	_ "github.com/lib/pq"
 )

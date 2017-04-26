@@ -12,6 +12,7 @@ import (
 )
 
 var findMetaDataStatement *sql.Stmt
+var findMetaDataWithFilterStatement *sql.Stmt
 var findS3DataStatement *sql.Stmt
 var parentJSON []byte
 var taxonomyJSON []byte
@@ -21,6 +22,7 @@ func prepareSQLStatement(sql string, db *sql.DB) *sql.Stmt {
 	statement, err := db.Prepare(sql)
 	if err != nil {
 		log.ErrorC("Error: Could not prepare statement on database", err, log.Data{"sql": sql})
+		panic(err)
 	}
 	return statement
 }
@@ -40,8 +42,10 @@ func main() {
 	}
 	defer db.Close()
 	findMetaDataSQL := "SELECT content FROM metadata WHERE uri = $1"
+	findMetaDataWithFilterSQL := "SELECT json_build_object($1::text, content->'description'->>$2) FROM metadata WHERE uri = $3"
 	findS3DataSQL := "SELECT s3 FROM s3data WHERE uri = $1"
 	findMetaDataStatement = prepareSQLStatement(findMetaDataSQL, db)
+	findMetaDataWithFilterStatement = prepareSQLStatement(findMetaDataWithFilterSQL, db)
 	findS3DataStatement = prepareSQLStatement(findS3DataSQL, db)
 	defer findMetaDataStatement.Close()
 	defer findS3DataStatement.Close()
@@ -89,7 +93,7 @@ func getResource(rw http.ResponseWriter, rq *http.Request) {
 }
 
 func getData(rw http.ResponseWriter, rq *http.Request) {
-	content.GetData(rw, rq, findMetaDataStatement)
+	content.GetData(rw, rq, findMetaDataStatement, findMetaDataWithFilterStatement)
 }
 
 func getParent(rw http.ResponseWriter, rq *http.Request) {

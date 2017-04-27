@@ -14,7 +14,7 @@ import (
 var findMetaDataStatement *sql.Stmt
 var findMetaDataWithFilterStatement *sql.Stmt
 var findS3DataStatement *sql.Stmt
-var parentJSON []byte
+var parentStatement *sql.Stmt
 var taxonomyJSON []byte
 var generatorURL string
 
@@ -32,7 +32,6 @@ func main() {
 	port := utils.GetEnvironmentVariable("PORT", "8082")
 	generatorURL = utils.GetEnvironmentVariable("GENERATOR_URL", "localhost:8092")
 	taxonomyFile := utils.GetEnvironmentVariable("TAXONOMY_FILE", "static/taxonomy.json")
-	parentFile := utils.GetEnvironmentVariable("PARENT_FILE", "static/parent.json")
 	log.Namespace = "dp-content-api"
 
 	db, dbErr := sql.Open("postgres", dbSource)
@@ -44,18 +43,13 @@ func main() {
 	findMetaDataSQL := "SELECT content FROM metadata WHERE uri = $1"
 	findMetaDataWithFilterSQL := "SELECT json_build_object($1::text, content->'description'->>$2) FROM metadata WHERE uri = $3"
 	findS3DataSQL := "SELECT s3 FROM s3data WHERE uri = $1"
+	parentDataSQL := "SELECT uri, content->'description'->>'title', content->'type' FROM metadata WHERE uri = ANY($1) ORDER BY length(uri) ASC;"
 	findMetaDataStatement = prepareSQLStatement(findMetaDataSQL, db)
 	findMetaDataWithFilterStatement = prepareSQLStatement(findMetaDataWithFilterSQL, db)
 	findS3DataStatement = prepareSQLStatement(findS3DataSQL, db)
+	parentStatement = prepareSQLStatement(parentDataSQL, db)
 	defer findMetaDataStatement.Close()
 	defer findS3DataStatement.Close()
-
-	data, parentErr := ioutil.ReadFile(parentFile)
-	if parentErr != nil {
-		log.ErrorC("Failed to load static parent data", parentErr, log.Data{})
-		panic(parentErr)
-	}
-	parentJSON = data
 
 	data, taxonomyErr := ioutil.ReadFile(taxonomyFile)
 	if taxonomyErr != nil {
@@ -71,8 +65,8 @@ func main() {
 	// both endpoints uses the same function handler.
 	http.HandleFunc("/data/", getData)
 	http.HandleFunc("/data", getData)
-	http.HandleFunc("/parent/", getParent)
-	http.HandleFunc("/parent", getParent)
+	http.HandleFunc("/parents/", getParent)
+	http.HandleFunc("/parents", getParent)
 	http.HandleFunc("/resource/", getResource)
 	http.HandleFunc("/resource", getResource)
 	http.HandleFunc("/taxonomy/", getTaxonomy)
@@ -97,7 +91,8 @@ func getData(rw http.ResponseWriter, rq *http.Request) {
 }
 
 func getParent(rw http.ResponseWriter, rq *http.Request) {
-	content.StaticHandler(rw, rq, parentJSON)
+	log.Debug("Data", log.Data{"parms": rq.URL.Query()})
+	content.GetParent(rw, rq, parentStatement)
 }
 
 func getTaxonomy(rw http.ResponseWriter, rq *http.Request) {

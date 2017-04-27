@@ -2,8 +2,9 @@ package content
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
+
+	"github.com/ONSdigital/go-ns/log"
 )
 
 func GetData(w http.ResponseWriter, r *http.Request, contentQuery, filterQuery *sql.Stmt) {
@@ -13,18 +14,19 @@ func GetData(w http.ResponseWriter, r *http.Request, contentQuery, filterQuery *
 	if lang == "" {
 		lang = "en"
 	}
-	fullURL := uri + "?lang=" + lang
+	fullURI := uri + "?lang=" + lang
 	var results *sql.Row
 	if filter != "" {
-		results = filterQuery.QueryRow(filter, filter, fullURL)
+		results = filterQuery.QueryRow(filter, "{"+filter+"}", fullURI)
 	} else {
-		results = contentQuery.QueryRow(fullURL)
+		results = contentQuery.QueryRow(fullURI)
 	}
 	var content sql.NullString
 	notFound := results.Scan(&content)
 	if notFound != nil {
-		log.Printf("Data not found. uri : %s, language : %s, %s", fullURL, lang, notFound.Error())
+		log.ErrorC("Data not found.", notFound, log.Data{"uri": fullURI})
 		http.Error(w, "Content not found", http.StatusNotFound)
+		return
 	}
 	w.Write([]byte(content.String))
 }

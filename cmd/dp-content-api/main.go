@@ -41,7 +41,7 @@ func main() {
 	}
 	defer db.Close()
 	findMetaDataSQL := "SELECT content FROM metadata WHERE uri = $1"
-	findMetaDataWithFilterSQL := "SELECT json_build_object($1::text, content->'description'->>$2) FROM metadata WHERE uri = $3"
+	findMetaDataWithFilterSQL := "SELECT json_build_object($1::text, content#>$2, 'uri', content->>'uri') FROM metadata WHERE uri = $3"
 	findS3DataSQL := "SELECT s3 FROM s3data WHERE uri = $1"
 	parentDataSQL := "SELECT uri, content->'description'->>'title', content->'type' FROM metadata WHERE uri = ANY($1) ORDER BY length(uri) ASC;"
 	findMetaDataStatement = prepareSQLStatement(findMetaDataSQL, db)

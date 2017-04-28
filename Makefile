@@ -14,6 +14,9 @@ build:
 	@mkdir -p $(BUILD_ARCH)
 	go build -o $(BUILD_ARCH)/bin/dp-content-api cmd/dp-content-api/main.go
 	@cp -r static $(BUILD_ARCH)
+
+test:
+	go test -cover content/*.go
 	
 package: build
 	tar -zcf $(TGZ_FILE) -C $(BUILD_ARCH) .

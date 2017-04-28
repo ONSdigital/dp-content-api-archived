@@ -2,21 +2,16 @@ package content
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
 
-	"github.com/ONSdigital/dp-publish-pipeline/s3"
-	"github.com/ONSdigital/dp-publish-pipeline/utils"
+	"github.com/ONSdigital/go-ns/log"
+
+	"github.com/ONSdigital/dp-content-api/s3"
 )
 
-func GetResource(w http.ResponseWriter, r *http.Request, st *sql.Stmt) {
-	bucketName := utils.GetEnvironmentVariable("S3_BUCKET", "content")
-	endpoint := utils.GetEnvironmentVariable("S3_URL", "localhost:4000")
-	accessKeyID := utils.GetEnvironmentVariable("S3_ACCESS_KEY", "1234")
-	secretAccessKey := utils.GetEnvironmentVariable("S3_SECRET_ACCESS_KEY", "1234")
-
+func GetResource(w http.ResponseWriter, r *http.Request, st *sql.Stmt, s3Client s3.S3Client) {
 	uri := r.URL.Query().Get("uri")
 	lang := r.URL.Query().Get("lang")
 	if lang == "" {
@@ -26,15 +21,17 @@ func GetResource(w http.ResponseWriter, r *http.Request, st *sql.Stmt) {
 	var s3Location sql.NullString
 	notFound := results.Scan(&s3Location)
 	if notFound != nil {
-		log.Printf("Resource not found. uri : %s, language : %s, %s", uri, lang, notFound.Error())
+		log.ErrorC("Resource not found", notFound, log.Data{"uri": uri, "lang": lang})
+		http.Error(w, "Resource not found", http.StatusNotFound)
 	} else {
-		s3Client := s3.CreateClient(bucketName, endpoint, accessKeyID, secretAccessKey, false)
-		s3uri := strings.TrimLeft(s3Location.String, "s3://"+bucketName)
+		s3uri := strings.TrimLeft(s3Location.String, "s3://"+s3Client.GetBucket())
 		data, err := s3Client.GetObject(s3uri)
 		if err != nil {
-			log.Printf("Resource not found uri %s, %s", uri, err.Error())
+			log.ErrorC("Resource not found", err, log.Data{"uri": uri, "lang": lang})
 			http.Error(w, "Content not found", http.StatusNotFound)
+			return
 		}
+		log.Debug("Data found", log.Data{"uri": uri})
 		w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(s3uri))
 		w.Write(data)
 	}

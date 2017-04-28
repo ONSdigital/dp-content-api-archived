@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ONSdigital/dp-publish-pipeline/utils"
+	"github.com/ONSdigital/dp-content-api/utils"
 )
 
 func ExportHandler(w http.ResponseWriter, r *http.Request, generatorURL string) {

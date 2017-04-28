@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ONSdigital/dp-content-api/content"
+	"github.com/ONSdigital/dp-content-api/s3"
 	"github.com/ONSdigital/dp-content-api/utils"
 	"github.com/ONSdigital/go-ns/log"
 	_ "github.com/lib/pq"
@@ -15,6 +16,7 @@ var findMetaDataStatement *sql.Stmt
 var findMetaDataWithFilterStatement *sql.Stmt
 var findS3DataStatement *sql.Stmt
 var parentStatement *sql.Stmt
+var s3Client s3.S3Client
 var taxonomyJSON []byte
 var generatorURL string
 
@@ -31,6 +33,10 @@ func main() {
 	dbSource := utils.GetEnvironmentVariable("DB_ACCESS", "user=dp dbname=dp sslmode=disable")
 	port := utils.GetEnvironmentVariable("PORT", "8082")
 	generatorURL = utils.GetEnvironmentVariable("GENERATOR_URL", "localhost:8092")
+	s3BucketName := utils.GetEnvironmentVariable("S3_BUCKET", "content")
+	s3Endpoint := utils.GetEnvironmentVariable("S3_URL", "localhost:4000")
+	accessKeyID := utils.GetEnvironmentVariable("S3_ACCESS_KEY", "1234")
+	secretAccessKey := utils.GetEnvironmentVariable("S3_SECRET_ACCESS_KEY", "1234")
 	taxonomyFile := utils.GetEnvironmentVariable("TAXONOMY_FILE", "static/taxonomy.json")
 	log.Namespace = "dp-content-api"
 
@@ -49,7 +55,11 @@ func main() {
 	findS3DataStatement = prepareSQLStatement(findS3DataSQL, db)
 	parentStatement = prepareSQLStatement(parentDataSQL, db)
 	defer findMetaDataStatement.Close()
+	defer findMetaDataWithFilterStatement.Close()
 	defer findS3DataStatement.Close()
+	defer parentStatement.Close()
+
+	s3Client = s3.CreateClient(s3BucketName, s3Endpoint, accessKeyID, secretAccessKey, false)
 
 	data, taxonomyErr := ioutil.ReadFile(taxonomyFile)
 	if taxonomyErr != nil {
@@ -58,7 +68,8 @@ func main() {
 	}
 	taxonomyJSON = data
 
-	log.Debug("Starting content api", log.Data{"port": port, "generator_url": generatorURL})
+	log.Debug("Starting content api", log.Data{"port": port, "generator_url": generatorURL,
+		"s3_bucket": s3BucketName, "s3_endpoint": s3Endpoint})
 	// Babbage can use two different url types to call the content-api. One which
 	// only contains the endpoint type and another which extends the type and includes
 	// collectionID e.g /data/my-collection?param=list. As we don't need the collectionID
@@ -83,7 +94,7 @@ func main() {
 }
 
 func getResource(rw http.ResponseWriter, rq *http.Request) {
-	content.GetResource(rw, rq, findS3DataStatement)
+	content.GetResource(rw, rq, findS3DataStatement, s3Client)
 }
 
 func getData(rw http.ResponseWriter, rq *http.Request) {

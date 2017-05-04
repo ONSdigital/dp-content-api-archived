@@ -86,3 +86,10 @@ func (s3 *MockS3Client) GetObject(uri string) ([]byte, error) {
 	}
 	return []byte("test-data"), nil
 }
+
+func (s3 *MockS3Client) GetFileSize(uri string) (int64, error) {
+	if s3.throwError {
+		return 0, fmt.Errorf("Mock S3 error")
+	}
+	return 0, nil
+}

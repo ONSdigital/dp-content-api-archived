@@ -43,3 +43,15 @@ func (s3 *MinioClient) GetObject(location string) ([]byte, error) {
 	}
 	return data, nil
 }
+
+func (s3 *MinioClient) GetFileSize(location string) (int64, error) {
+	object, err := s3.client.GetObject(s3.bucket, location)
+	if err != nil {
+		return 0, err
+	}
+	stat, err := object.Stat()
+	if err != nil {
+		return 0, err
+	}
+	return stat.Size, nil
+}

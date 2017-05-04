@@ -37,9 +37,22 @@ Errors
 #### Parent
 Route : Get /parent
 
-Hard coded value. See static-parent.json
+Parameters
+* uri : A uri to create bread crumb trail.
+
 
 #### Taxonomy
 Route : Get /taxonomy
 
 Hard coded value. See static-taxonomy.json
+
+
+#### File Size
+Route : Get /filesize
+
+Parameters
+* uri : location of static file in the S3
+
+Errors
+* 404 : S3 file not found
+

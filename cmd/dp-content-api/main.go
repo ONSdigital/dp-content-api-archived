@@ -86,6 +86,8 @@ func main() {
 	http.HandleFunc("/generator", generatorHandler)
 	http.HandleFunc("/export/", exportHandler)
 	http.HandleFunc("/export", exportHandler)
+	http.HandleFunc("/filesize/", getFileSize)
+	http.HandleFunc("/filesize", getFileSize)
 	serverErr := http.ListenAndServe(":"+port, nil)
 	if serverErr != nil {
 		log.ErrorC("Failed to start http server", serverErr, log.Data{})
@@ -116,4 +118,8 @@ func exportHandler(w http.ResponseWriter, r *http.Request) {
 
 func generatorHandler(w http.ResponseWriter, r *http.Request) {
 	content.GeneratorHandler(w, r, generatorURL)
+}
+
+func getFileSize(rw http.ResponseWriter, rq *http.Request) {
+	content.GetFileSize(rw, rq, findS3DataStatement, s3Client)
 }

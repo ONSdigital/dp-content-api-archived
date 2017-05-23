@@ -13,6 +13,7 @@ resource.
 * `PORT` defaults to "8082"
 * `TAXONOMY_FILE` defaults to "static/taxonomy.json"
 * `PARENT_FILE` defaults to "static/parent.json"
+* `HEALTHCHECK_ENDPOINT` defaults to "/healthcheck"
 
 ### Interfaces
 

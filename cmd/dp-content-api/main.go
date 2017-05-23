@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ONSdigital/dp-content-api/content"
+	"github.com/ONSdigital/dp-content-api/health"
 	"github.com/ONSdigital/dp-content-api/s3"
 	"github.com/ONSdigital/dp-content-api/utils"
 	"github.com/ONSdigital/go-ns/log"
@@ -38,6 +39,8 @@ func main() {
 	accessKeyID := utils.GetEnvironmentVariable("S3_ACCESS_KEY", "1234")
 	secretAccessKey := utils.GetEnvironmentVariable("S3_SECRET_ACCESS_KEY", "1234")
 	taxonomyFile := utils.GetEnvironmentVariable("TAXONOMY_FILE", "static/taxonomy.json")
+	healthCheckEndpoint := utils.GetEnvironmentVariable("HEALTHCHECK_ENDPOINT", "/healthcheck")
+
 	log.Namespace = "dp-content-api"
 
 	db, dbErr := sql.Open("postgres", dbSource)
@@ -50,14 +53,17 @@ func main() {
 	findMetaDataWithFilterSQL := "SELECT json_build_object($1::text, content#>$2, 'uri', content->>'uri') FROM metadata WHERE uri = $3"
 	findS3DataSQL := "SELECT s3 FROM s3data WHERE uri = $1"
 	parentDataSQL := "SELECT uri, content->'description'->>'title', content->'type' FROM metadata WHERE uri = ANY($1) ORDER BY length(uri) ASC;"
+	healthSQL := "SELECT 1 FROM metadata"
 	findMetaDataStatement = prepareSQLStatement(findMetaDataSQL, db)
 	findMetaDataWithFilterStatement = prepareSQLStatement(findMetaDataWithFilterSQL, db)
 	findS3DataStatement = prepareSQLStatement(findS3DataSQL, db)
 	parentStatement = prepareSQLStatement(parentDataSQL, db)
+	healthStatement := prepareSQLStatement(healthSQL, db)
 	defer findMetaDataStatement.Close()
 	defer findMetaDataWithFilterStatement.Close()
 	defer findS3DataStatement.Close()
 	defer parentStatement.Close()
+	defer healthStatement.Close()
 
 	s3Client = s3.CreateClient(s3BucketName, s3Endpoint, accessKeyID, secretAccessKey, false)
 
@@ -88,6 +94,7 @@ func main() {
 	http.HandleFunc("/export", exportHandler)
 	http.HandleFunc("/filesize/", getFileSize)
 	http.HandleFunc("/filesize", getFileSize)
+	health.Handler(healthCheckEndpoint, nil, healthStatement)
 	serverErr := http.ListenAndServe(":"+port, nil)
 	if serverErr != nil {
 		log.ErrorC("Failed to start http server", serverErr, log.Data{})

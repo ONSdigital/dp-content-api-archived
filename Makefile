@@ -33,7 +33,6 @@ nomad:
 			-e 's,S3_CONTENT_BUCKET,$(S3_CONTENT_BUCKET),g'	\
 			-e 's,DATABASE_URL,$(DATABASE_URL),g'		\
 			-e 's,DP_GENERATOR_URL,$(DP_GENERATOR_URL),g'	\
-			-e 's,HEALTHCHECK_PORT,$(PORT),g'	\
 			-e 's,HEALTHCHECK_ENDPOINT,$(HEALTHCHECK_ENDPOINT),g'	\
 			< $$t > $$plan || exit 2;			\
 	done

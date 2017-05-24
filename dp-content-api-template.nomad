@@ -36,7 +36,7 @@ job "dp-content-api" {
         }
       }
       service {
-        port = "HEALTHCHECK_PORT"
+        port = "${NOMAD_PORT_http}"
         check {
           type     = "http"
           path     = "HEALTHCHECK_ENDPOINT"

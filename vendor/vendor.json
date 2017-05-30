@@ -1,0 +1,140 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "4zY8ywnesFqYBdKBcIsfc3/uiX0=",
+			"path": "github.com/DATA-DOG/go-sqlmock",
+			"revision": "18ab7ac1c7ac8c73f4a8d6dde2d7fc10a1d0c53a",
+			"revisionTime": "2017-04-26T06:56:02Z"
+		},
+		{
+			"checksumSHA1": "hIujVNsNUItyBNjU2MMYMSc3T3U=",
+			"path": "github.com/ONSdigital/go-ns/log",
+			"revision": "0b92020de072d989d40655e3eda1a9f1bc218ebd",
+			"revisionTime": "2017-05-19T10:04:36Z"
+		},
+		{
+			"checksumSHA1": "kPviFEMWr7Ynp/OsxggKRSv0TEE=",
+			"path": "github.com/go-ini/ini",
+			"revision": "afbc45e87f3ba324c532d12c71918ef52e0fb194",
+			"revisionTime": "2017-05-19T02:37:13Z"
+		},
+		{
+			"checksumSHA1": "yIkYzW7bzAD81zHyuCNmEj4+oxQ=",
+			"path": "github.com/gopherjs/gopherjs/js",
+			"revision": "7cde3d36aea3e1b3be7827c4dcbe6bbae73d012e",
+			"revisionTime": "2017-05-29T01:34:00Z"
+		},
+		{
+			"checksumSHA1": "Js/yx9fZ3+wH1wZpHNIxSTMIaCg=",
+			"path": "github.com/jtolds/gls",
+			"revision": "77f18212c9c7edc9bd6a33d383a7b545ce62f064",
+			"revisionTime": "2017-05-03T22:40:06Z"
+		},
+		{
+			"checksumSHA1": "uTUsjF7bymOuKvXbW2BpkK/w4Vg=",
+			"path": "github.com/lib/pq",
+			"revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
+			"revisionTime": "2017-03-24T20:46:54Z"
+		},
+		{
+			"checksumSHA1": "Gk3jTNQ5uGDUE0WMJFWcYz9PMps=",
+			"path": "github.com/lib/pq/oid",
+			"revision": "2704adc878c21e1329f46f6e56a1c387d788ff94",
+			"revisionTime": "2017-03-24T20:46:54Z"
+		},
+		{
+			"checksumSHA1": "hBgLmZ/4mCxmnH88mqFKBkpJFUY=",
+			"origin": "github.com/ONSdigital/go-ns/vendor/github.com/mgutz/ansi",
+			"path": "github.com/mgutz/ansi",
+			"revision": "0b92020de072d989d40655e3eda1a9f1bc218ebd",
+			"revisionTime": "2017-05-19T10:04:36Z"
+		},
+		{
+			"checksumSHA1": "q8VfSvQ6fZY+QwtlMPtQsJrNews=",
+			"path": "github.com/minio/go-homedir",
+			"revision": "a7ee80e4c344cab722502d3f074c5b7245d0bbe7",
+			"revisionTime": "2017-05-16T15:42:22Z"
+		},
+		{
+			"checksumSHA1": "Al+PIAL267H6Ig3sKA7JynjZKJk=",
+			"path": "github.com/minio/minio-go",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "H4DIGmrbu8XEe24zy/5s0JuB/gU=",
+			"path": "github.com/minio/minio-go/pkg/credentials",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "lsxCcRcNUDxhQyO999SOdvKzzfM=",
+			"path": "github.com/minio/minio-go/pkg/encrypt",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "3tl2ehmod/EzXE9o9WJ5HM2AQPE=",
+			"path": "github.com/minio/minio-go/pkg/policy",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "KUD7ZG+upbJZaHPyFEabaDHNGKA=",
+			"path": "github.com/minio/minio-go/pkg/s3signer",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "gRnCFKb4x83GBLVUZXoOjujd+U0=",
+			"path": "github.com/minio/minio-go/pkg/s3utils",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "maUy+dbN6VfTTnfErrAW2lLit1w=",
+			"path": "github.com/minio/minio-go/pkg/set",
+			"revision": "46e4328e64b7c53669b14183610a221c2f06f460",
+			"revisionTime": "2017-05-24T03:07:26Z"
+		},
+		{
+			"checksumSHA1": "AikWjAOvWHSJ8G1iU+wNReZnyCk=",
+			"path": "github.com/smartystreets/assertions",
+			"revision": "f8459f92181409546d2762c9e9c4bedc23c92d76",
+			"revisionTime": "2017-05-12T16:53:30Z"
+		},
+		{
+			"checksumSHA1": "Vzb+dEH/LTYbvr8RXHmt6xJHz04=",
+			"path": "github.com/smartystreets/assertions/internal/go-render/render",
+			"revision": "f8459f92181409546d2762c9e9c4bedc23c92d76",
+			"revisionTime": "2017-05-12T16:53:30Z"
+		},
+		{
+			"checksumSHA1": "r6FauVdOTFnwYQgrKGFuWUbIAJE=",
+			"path": "github.com/smartystreets/assertions/internal/oglematchers",
+			"revision": "f8459f92181409546d2762c9e9c4bedc23c92d76",
+			"revisionTime": "2017-05-12T16:53:30Z"
+		},
+		{
+			"checksumSHA1": "f4m09DHEetaanti/GqUJzyCBTaI=",
+			"path": "github.com/smartystreets/goconvey/convey",
+			"revision": "af8e7d560364b90f732a1d119d17b5506e50447d",
+			"revisionTime": "2017-05-08T12:12:05Z"
+		},
+		{
+			"checksumSHA1": "9LakndErFi5uCXtY1KWl0iRnT4c=",
+			"path": "github.com/smartystreets/goconvey/convey/gotest",
+			"revision": "af8e7d560364b90f732a1d119d17b5506e50447d",
+			"revisionTime": "2017-05-08T12:12:05Z"
+		},
+		{
+			"checksumSHA1": "FWDhk37bhAwZ2363D/L2xePwR64=",
+			"path": "github.com/smartystreets/goconvey/convey/reporting",
+			"revision": "af8e7d560364b90f732a1d119d17b5506e50447d",
+			"revisionTime": "2017-05-08T12:12:05Z"
+		}
+	],
+	"rootPath": "github.com/ONSdigital/dp-content-api"
+}

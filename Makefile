@@ -1,3 +1,4 @@
+MAIN=dp-content-api
 
 BUILD=build
 HASH?=$(shell make hash)
@@ -5,8 +6,30 @@ BUILD_ARCH=$(BUILD)/$(GOOS)-$(GOARCH)
 DATE:=$(shell date '+%Y%m%d-%H%M%S')
 TGZ_FILE=dp-content-api-$(GOOS)-$(GOARCH)-$(DATE)-$(HASH).tar.gz
 
+HEALTHCHECK_ENDPOINT?=/healthcheck
+DATA_CENTER?=dc1
+DEV?=
+
+NOMAD?=
+NOMAD_SRC_DIR?=nomad
+NOMAD_PLAN_TARGET?=$(BUILD)
+NOMAD_PLAN=$(NOMAD_PLAN_TARGET)/$(MAIN).nomad
+
 export GOOS?=$(shell go env GOOS)
 export GOARCH?=$(shell go env GOARCH)
+thisOS:=$(shell uname -s)
+
+ifeq ($(thisOS),Darwin)
+SED?=gsed
+else
+SED?=sed
+endif
+
+ifdef DEV
+HUMAN_LOG?=1
+else
+HUMAN_LOG?=
+endif
 
 all: build nomad
 
@@ -15,6 +38,13 @@ build:
 	go build -o $(BUILD_ARCH)/bin/dp-content-api cmd/dp-content-api/main.go
 	@cp -r static $(BUILD_ARCH)
 
+$(MAIN) run:
+ifdef NOMAD
+	@if [[ ! -f $(NOMAD_PLAN) ]]; then echo Cannot see $(NOMAD_PLAN); exit 1; fi; echo nomad run $(NOMAD_PLAN); nomad run $(NOMAD_PLAN)
+else
+	@main=$(CMD_DIR)/$@/main.go; if [[ ! -f $$main ]]; then echo Cannot see $$main; exit 1; fi; go run -race $$main
+endif
+
 test:
 	go test -cover content/*.go
 	
@@ -22,24 +52,28 @@ package: build
 	tar -zcf $(TGZ_FILE) -C $(BUILD_ARCH) .
 
 nomad:
-	@for t in *-template.nomad; do			\
-		plan=$${t%-template.nomad}.nomad;	\
+	@test -d $(NOMAD_PLAN_TARGET) || mkdir -p $(NOMAD_PLAN_TARGET)
+	@driver=exec; [[ -n "$(DEV)" ]] && driver=raw_exec;	\
+	for t in *-template.nomad; do			\
+		plan=$(NOMAD_PLAN_TARGET)/$${t%-template.nomad}.nomad;	\
 		test -f $$plan && rm $$plan;		\
-		sed	-e 's,DATA_CENTER,$(DATA_CENTER),g'			\
-			-e 's,S3_TAR_FILE,$(S3_TAR_FILE),g'			\
-			-e 's,S3_CONTENT_URL,$(S3_CONTENT_URL),g'		\
-			-e 's,S3_CONTENT_ACCESS_KEY,$(S3_CONTENT_ACCESS_KEY),g'	\
-			-e 's,S3_CONTENT_SECRET_ACCESS_KEY,$(S3_CONTENT_SECRET_ACCESS_KEY),g'	\
-			-e 's,S3_CONTENT_BUCKET,$(S3_CONTENT_BUCKET),g'	\
-			-e 's,DATABASE_URL,$(DATABASE_URL),g'		\
-			-e 's,DP_GENERATOR_URL,$(DP_GENERATOR_URL),g'	\
-			-e 's,HEALTHCHECK_ENDPOINT,$(HEALTHCHECK_ENDPOINT),g'	\
+		$(SED) -r	\
+			-e 's,\bDATA_CENTER\b,$(DATA_CENTER),g'			\
+			-e 's,\bS3_TAR_FILE\b,$(S3_TAR_FILE),g'			\
+			-e 's,\bS3_CONTENT_URL\b,$(S3_CONTENT_URL),g'		\
+			-e 's,\bS3_CONTENT_ACCESS_KEY\b,$(S3_CONTENT_ACCESS_KEY),g'	\
+			-e 's,\bS3_CONTENT_SECRET_ACCESS_KEY\b,$(S3_CONTENT_SECRET_ACCESS_KEY),g'	\
+			-e 's,\bS3_CONTENT_BUCKET\b,$(S3_CONTENT_BUCKET),g'	\
+			-e 's,\bDATABASE_URL\b,$(DATABASE_URL),g'		\
+			-e 's,\bDP_GENERATOR_URL\b,$(DP_GENERATOR_URL),g'	\
+			-e 's,\bHEALTHCHECK_ENDPOINT\b,$(HEALTHCHECK_ENDPOINT),g'	\
+			-e 's,\bHUMAN_LOG_FLAG\b,$(HUMAN_LOG),g'			\
+			-e 's,^(  *driver  *=  *)"exec",\1"'$$driver'",'	\
 			< $$t > $$plan || exit 2;			\
 	done
 
 clean:
 	test -d $(BUILD) && rm -r $(BUILD)
-	for t in *-template.nomad; do plan=$${t%-template.nomad}.nomad; test -f $$plan || continue; rm $$plan || exit 2; done
 
 hash:
 	@git rev-parse --short HEAD

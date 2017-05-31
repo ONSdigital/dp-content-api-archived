@@ -23,6 +23,7 @@ job "dp-content-api" {
         S3_BUCKET = "S3_CONTENT_BUCKET"
         DB_ACCESS = "DATABASE_URL"
         GENERATOR_URL = "DP_GENERATOR_URL"
+        HUMAN_LOG = "HUMAN_LOG_FLAG"
       }
       driver = "exec"
       config {

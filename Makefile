@@ -6,9 +6,11 @@ BUILD_ARCH=$(BUILD)/$(GOOS)-$(GOARCH)
 DATE:=$(shell date '+%Y%m%d-%H%M%S')
 TGZ_FILE=dp-content-api-$(GOOS)-$(GOARCH)-$(DATE)-$(HASH).tar.gz
 
+PORT?=8082
 HEALTHCHECK_ENDPOINT?=/healthcheck
 DATA_CENTER?=dc1
 DEV?=
+S3_URL?=s3.amazonaws.com
 
 NOMAD?=
 NOMAD_SRC_DIR?=nomad
@@ -60,7 +62,7 @@ nomad:
 		$(SED) -r	\
 			-e 's,\bDATA_CENTER\b,$(DATA_CENTER),g'			\
 			-e 's,\bS3_TAR_FILE\b,$(S3_TAR_FILE),g'			\
-			-e 's,\bS3_CONTENT_URL\b,$(S3_CONTENT_URL),g'		\
+			-e 's,\bS3_CONTENT_URL\b,$(S3_URL),g'			\
 			-e 's,\bS3_CONTENT_ACCESS_KEY\b,$(S3_CONTENT_ACCESS_KEY),g'	\
 			-e 's,\bS3_CONTENT_SECRET_ACCESS_KEY\b,$(S3_CONTENT_SECRET_ACCESS_KEY),g'	\
 			-e 's,\bS3_CONTENT_BUCKET\b,$(S3_CONTENT_BUCKET),g'	\
@@ -68,6 +70,7 @@ nomad:
 			-e 's,\bDP_GENERATOR_URL\b,$(DP_GENERATOR_URL),g'	\
 			-e 's,\bHEALTHCHECK_ENDPOINT\b,$(HEALTHCHECK_ENDPOINT),g'	\
 			-e 's,\bHUMAN_LOG_FLAG\b,$(HUMAN_LOG),g'			\
+			-e 's,\bCONTENT_API_PORT\b,$(PORT),g'			\
 			-e 's,^(  *driver  *=  *)"exec",\1"'$$driver'",'	\
 			< $$t > $$plan || exit 2;			\
 	done

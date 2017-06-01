@@ -16,13 +16,14 @@ job "dp-content-api" {
         // }
       }
       env {
-        PORT = "${NOMAD_PORT_http}"
+        PORT = "CONTENT_API_PORT"
         S3_URL = "S3_CONTENT_URL"
         S3_ACCESS_KEY = "S3_CONTENT_ACCESS_KEY"
         S3_SECRET_ACCESS_KEY = "S3_CONTENT_SECRET_ACCESS_KEY"
         S3_BUCKET = "S3_CONTENT_BUCKET"
         DB_ACCESS = "DATABASE_URL"
         GENERATOR_URL = "DP_GENERATOR_URL"
+        HUMAN_LOG = "HUMAN_LOG_FLAG"
       }
       driver = "exec"
       config {
@@ -32,7 +33,9 @@ job "dp-content-api" {
         cpu = 500
         memory = 350
         network {
-          port "http" {}
+          port "http" {
+            static = { "CONTENT_API_PORT" }
+          }
         }
       }
       service {

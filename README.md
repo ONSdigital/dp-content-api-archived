@@ -1,10 +1,10 @@
 ## Content API
 
-A API used to get data from published meta and static files from different
+An API used to get data from published meta and static files from different
 resource.
 
 ### Environment variables
-* `S3_URL` defaults to "http://localhost:4000"
+* `S3_URL` defaults to `s3.amazonaws.com`
 * `S3_ACCESS_KEY` defaults to "1234"
 * `S3_SECRET_ACCESS_KEY` defaults to "1234"
 * `S3_BUCKET` defaults to "content"

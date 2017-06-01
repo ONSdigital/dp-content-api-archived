@@ -1,4 +1,5 @@
 MAIN=dp-content-api
+SHELL=bash
 
 BUILD=build
 HASH?=$(shell make hash)
@@ -8,9 +9,9 @@ TGZ_FILE=dp-content-api-$(GOOS)-$(GOARCH)-$(DATE)-$(HASH).tar.gz
 
 PORT?=8082
 HEALTHCHECK_ENDPOINT?=/healthcheck
-DATA_CENTER?=dc1
 DEV?=
 S3_URL?=s3.amazonaws.com
+S3_REGION?=eu-west-1
 
 NOMAD?=
 NOMAD_SRC_DIR?=nomad
@@ -28,8 +29,10 @@ SED?=sed
 endif
 
 ifdef DEV
+DATA_CENTER?=dc1
 HUMAN_LOG?=1
 else
+DATA_CENTER?=$(S3_REGION)
 HUMAN_LOG?=
 endif
 

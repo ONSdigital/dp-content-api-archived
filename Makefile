@@ -4,6 +4,8 @@ SHELL=bash
 BUILD=build
 HASH?=$(shell make hash)
 BUILD_ARCH=$(BUILD)/$(GOOS)-$(GOARCH)
+BIN_DIR?=.
+
 DATE:=$(shell date '+%Y%m%d-%H%M%S')
 TGZ_FILE=dp-content-api-$(GOOS)-$(GOARCH)-$(DATE)-$(HASH).tar.gz
 
@@ -40,7 +42,7 @@ all: build nomad
 
 build:
 	@mkdir -p $(BUILD_ARCH)
-	go build -o $(BUILD_ARCH)/bin/dp-content-api cmd/dp-content-api/main.go
+	go build -o $(BUILD_ARCH)/$(BIN_DIR)/dp-content-api cmd/dp-content-api/main.go
 	@cp -r static $(BUILD_ARCH)
 
 $(MAIN) run:

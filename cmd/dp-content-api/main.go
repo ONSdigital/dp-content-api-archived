@@ -36,8 +36,9 @@ func main() {
 	generatorURL = utils.GetEnvironmentVariable("GENERATOR_URL", "localhost:8092")
 	s3BucketName := utils.GetEnvironmentVariable("S3_BUCKET", "content")
 	s3Endpoint := utils.GetEnvironmentVariable("S3_URL", "localhost:4000")
-	accessKeyID := utils.GetEnvironmentVariable("S3_ACCESS_KEY", "1234")
-	secretAccessKey := utils.GetEnvironmentVariable("S3_SECRET_ACCESS_KEY", "1234")
+	s3Secure := (utils.GetEnvironmentVariable("S3_SECURE", "1") == "1")
+	s3IAM := (utils.GetEnvironmentVariable("S3_IAM", "1") == "1")
+	regionName := utils.GetEnvironmentVariable("S3_REGION", "eu-west-1")
 	taxonomyFile := utils.GetEnvironmentVariable("TAXONOMY_FILE", "static/taxonomy.json")
 	healthCheckEndpoint := utils.GetEnvironmentVariable("HEALTHCHECK_ENDPOINT", "/healthcheck")
 
@@ -65,7 +66,7 @@ func main() {
 	defer parentStatement.Close()
 	defer healthStatement.Close()
 
-	s3Client = s3.CreateClient(s3BucketName, s3Endpoint, accessKeyID, secretAccessKey, false)
+	s3Client = s3.CreateClient(regionName, s3BucketName, s3Endpoint, s3IAM, s3Secure)
 
 	data, taxonomyErr := ioutil.ReadFile(taxonomyFile)
 	if taxonomyErr != nil {

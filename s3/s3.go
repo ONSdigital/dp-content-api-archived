@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/minio/minio-go"
+	"github.com/minio/minio-go/pkg/credentials"
 )
 
 type MinioClient struct {
@@ -16,8 +17,14 @@ func (s3 *MinioClient) GetBucket() string {
 	return s3.bucket
 }
 
-func CreateClient(bucket, endpoint, accessKeyID, secretAccessKey string, useSSL bool) S3Client {
-	minioClient, err := minio.New(endpoint, accessKeyID, secretAccessKey, useSSL)
+func CreateClient(awsZone, bucket, endpoint string, iam, useSSL bool) S3Client {
+	var cred *credentials.Credentials
+	if iam {
+		cred = credentials.NewIAM("")
+	} else {
+		cred = credentials.NewFileMinioClient("", "s3")
+	}
+	minioClient, err := minio.NewWithCredentials(endpoint, cred, useSSL, awsZone)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -37,7 +44,7 @@ func (s3 *MinioClient) GetObject(location string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, _ := ioutil.ReadAll(object)
+	data, err := ioutil.ReadAll(object)
 	if err != nil {
 		return nil, err
 	}

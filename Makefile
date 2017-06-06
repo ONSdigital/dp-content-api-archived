@@ -68,8 +68,6 @@ nomad:
 			-e 's,\bDATA_CENTER\b,$(DATA_CENTER),g'			\
 			-e 's,\bS3_TAR_FILE\b,$(S3_TAR_FILE),g'			\
 			-e 's,\bS3_CONTENT_URL\b,$(S3_URL),g'			\
-			-e 's,\bS3_CONTENT_ACCESS_KEY\b,$(S3_CONTENT_ACCESS_KEY),g'	\
-			-e 's,\bS3_CONTENT_SECRET_ACCESS_KEY\b,$(S3_CONTENT_SECRET_ACCESS_KEY),g'	\
 			-e 's,\bS3_CONTENT_BUCKET\b,$(S3_CONTENT_BUCKET),g'	\
 			-e 's,\bDATABASE_URL\b,$(DATABASE_URL),g'		\
 			-e 's,\bDP_GENERATOR_URL\b,$(DP_GENERATOR_URL),g'	\
